@@ -25,6 +25,9 @@ public class PlayerScript : MonoBehaviour
 
     public AudioSource musicSource;
 
+    Animator anim;
+
+    private bool facingRight = true;
 
     private int scoreValue = 0;
 
@@ -38,6 +41,28 @@ public class PlayerScript : MonoBehaviour
         lives.text = livesValue.ToString();
         musicSource.clip = musicClipOne;
         musicSource.Play();
+        anim = GetComponent<Animator>();
+    }
+
+
+    void Update()
+    {
+        if (Input.GetKey("escape"))
+        {
+            Application.Quit();
+        }
+        if (Input.GetKey(KeyCode.D))
+        {
+            anim.SetInteger("State", 1);
+        }
+        if (Input.GetKey(KeyCode.A))
+        {
+            anim.SetInteger("State", 1);
+        }
+        if (Input.GetKey(KeyCode.W))
+        {
+            anim.SetInteger("State", 2);
+        }
     }
 
     // Update is called once per frame
@@ -47,15 +72,10 @@ public class PlayerScript : MonoBehaviour
         float vertMovement = Input.GetAxis("Vertical");
         rd2d.AddForce(new Vector2(hozMovement * speed, vertMovement * speed));
 
-
-        if (Input.GetKey("escape"))
-        {
-            Application.Quit();
-        }
         if (livesValue <= 0)
         {
             loseText.text = "You Died";
-            Destroy (gameObject);
+            Destroy(gameObject);
 
         }
         if (scoreValue == 4)
@@ -63,6 +83,23 @@ public class PlayerScript : MonoBehaviour
             livesValue = 3;
             lives.text = livesValue.ToString();
         }
+        if (facingRight == false && hozMovement > 0)
+        {
+            Flip();
+        }
+
+        else if (facingRight == true && hozMovement < 0)
+        {
+            Flip();
+        }
+    }
+
+    void Flip()
+    {
+        facingRight = !facingRight;
+        Vector2 Scaler = transform.localScale;
+        Scaler.x = Scaler.x * -1;
+        transform.localScale = Scaler;
     }
 
 
@@ -101,9 +138,16 @@ public class PlayerScript : MonoBehaviour
     {
         if (collision.collider.tag == "Ground")
         {
-            if (Input.GetKey(KeyCode.W))
+            if (collision.collider.tag == "Ground")
             {
-                rd2d.AddForce(new Vector2(0, 3), ForceMode2D.Impulse);
+                if (collision.collider.tag == "Ground")
+                {
+                    anim.SetInteger("State", 0);
+                }
+                if (Input.GetKey(KeyCode.W))
+                {
+                    rd2d.AddForce(new Vector2(0, 3), ForceMode2D.Impulse);
+                }
             }
         }
     }
